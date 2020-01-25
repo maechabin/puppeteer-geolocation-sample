@@ -1,16 +1,62 @@
-console.log("Try npm run check/fix!");
+import * as puppeteer from 'puppeteer';
+import * as Constants from './constants';
 
-const longString = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ut aliquet diam.';
+(async () => {
+  // 自動操作したいページのURL
+  const targetUrl = Constants.TARGET_URL;
 
-const trailing = 'Semicolon'
+  //  puppeteerを起動
+  const browser = await puppeteer.launch({
+    headless: false, // Headlessモードで起動するかどうか
+    slowMo: 50, // 50ミリ秒スローモーションで実行する
+  });
 
-            const why = 'am I tabbed?';
+  // geolocationを有効化
+  const context = browser.defaultBrowserContext();
+  // await context.clearPermissionOverrides();
+  await context.overridePermissions(targetUrl, ['geolocation']);
 
-export function doSomeStuff(withThis: string, andThat: string, andThose: string[]) {
-    //function on one line
-    if(!andThose.length) {return false;}
-    console.log(withThis);
-    console.log(andThat);
-    console.dir(andThose);
-}
-// TODO: more examples
+  // 新しい空のページを開く
+  const page = await browser.newPage();
+
+  // view portの設定
+  await page.setViewport({
+    width: 1200,
+    height: 600,
+  });
+
+  // https://nitayneeman.com/posts/getting-to-know-puppeteer-using-practical-examples/#faking-geolocation
+  await page.setGeolocation({ latitude: 21.28001716099308, longitude: 202.1704959869385 - 360 });
+
+  // Webページにアクセスする
+  await page.goto(targetUrl);
+  await page.waitForSelector('title');
+
+  await page.setGeolocation({ latitude: 21.28209658907723, longitude: 202.16663360595703 - 360 });
+  await page.waitFor(2000);
+
+  const latlngs = [
+    [21.28001716099308, 202.1704959869385],
+    [21.282165632083615, 202.16903887689116],
+    [21.28483422878972, 202.16735579073435],
+    [21.285697404178457, 202.16652799397707],
+    [21.284543066060998, 202.16328989714384],
+    [21.286815182224156, 202.16002464294436],
+    [21.28841467096632, 202.15933799743655],
+    [21.290254061510897, 202.15401649475098],
+    [21.291693568494672, 202.14955329895022],
+    [21.293133061383962, 202.1456050872803],
+    [21.29481245193988, 202.1420001983643],
+    [21.298091206774725, 202.13745117187503],
+    [21.299850508484006, 202.1368503570557],
+    [21.30216955583029, 202.1365070343018],
+  ];
+
+  for (const latlng of latlngs) {
+    await page.setGeolocation({ latitude: latlng[0], longitude: latlng[1] - 360 });
+    await page.waitFor(2000);
+  }
+
+  // ブラウザを終了する
+  await browser.close();
+})();

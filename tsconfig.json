@@ -1,7 +1,5 @@
 {
-  "extends": "./node_modules/gts/tsconfig-google.json",
   "compilerOptions": {
-    "rootDir": ".",
     "outDir": "./dist/",
     "sourceMap": true,
     "strictNullChecks": true,
@@ -13,5 +11,5 @@
     "removeComments": true,
     "target": "es6"
   },
-  "include": ["src/**/*.ts", "test/**/*.ts"]
+  "include": ["./src/**/*"]
 }
