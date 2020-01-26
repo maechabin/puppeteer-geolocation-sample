@@ -58,17 +58,24 @@ import * as Constants from './constants';
   ];
 
   // https://nitayneeman.com/posts/getting-to-know-puppeteer-using-practical-examples/#faking-geolocation
-  await page.setGeolocation({ latitude: latlngs[0][0], longitude: latlngs[0][1] - 360 });
+  await page.setGeolocation({ latitude: latlngs[0][0], longitude: getLng(latlngs[0][1]) });
 
   // Webページにアクセスする
   await page.goto(targetUrl);
   await page.waitForSelector('title');
 
   for (const latlng of latlngs) {
-    await page.setGeolocation({ latitude: latlng[0], longitude: latlng[1] - 360 });
     await page.waitFor(500);
+    await page.setGeolocation({ latitude: latlng[0], longitude: getLng(latlng[1]) });
   }
 
   // ブラウザを終了する
   await browser.close();
+
+  function getLng(lng: number) {
+    if (lng > 180) {
+      return lng - 360;
+    }
+    return lng;
+  }
 })();
