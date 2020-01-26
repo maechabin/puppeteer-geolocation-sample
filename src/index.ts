@@ -19,6 +19,21 @@ import * as Constants from './constants';
   // 新しい空のページを開く
   const page = await browser.newPage();
 
+  // Google Analyticsをブロックする
+  // https://help.apify.com/en/articles/2423246-block-requests-in-puppeteer
+  await page.setRequestInterception(true);
+  page.on('request', request => {
+    const url = request.url();
+
+    const filters = ['google-analytics', 'hermes', 'mobileanalytics'];
+    const shouldAbort = filters.some(urlPart => url.includes(urlPart));
+    if (shouldAbort) {
+      request.abort();
+    } else {
+      request.continue();
+    }
+  });
+
   // view portの設定
   await page.setViewport({
     width: 1200,
