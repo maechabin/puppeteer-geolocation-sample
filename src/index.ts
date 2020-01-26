@@ -25,16 +25,6 @@ import * as Constants from './constants';
     height: 600,
   });
 
-  // https://nitayneeman.com/posts/getting-to-know-puppeteer-using-practical-examples/#faking-geolocation
-  await page.setGeolocation({ latitude: 21.28001716099308, longitude: 202.1704959869385 - 360 });
-
-  // Webページにアクセスする
-  await page.goto(targetUrl);
-  await page.waitForSelector('title');
-
-  await page.setGeolocation({ latitude: 21.28209658907723, longitude: 202.16663360595703 - 360 });
-  await page.waitFor(2000);
-
   const latlngs = [
     [21.28001716099308, 202.1704959869385],
     [21.282165632083615, 202.16903887689116],
@@ -52,9 +42,16 @@ import * as Constants from './constants';
     [21.30216955583029, 202.1365070343018],
   ];
 
+  // https://nitayneeman.com/posts/getting-to-know-puppeteer-using-practical-examples/#faking-geolocation
+  await page.setGeolocation({ latitude: latlngs[0][0], longitude: latlngs[0][1] - 360 });
+
+  // Webページにアクセスする
+  await page.goto(targetUrl);
+  await page.waitForSelector('title');
+
   for (const latlng of latlngs) {
     await page.setGeolocation({ latitude: latlng[0], longitude: latlng[1] - 360 });
-    await page.waitFor(2000);
+    await page.waitFor(500);
   }
 
   // ブラウザを終了する
