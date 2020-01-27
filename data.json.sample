@@ -1,0 +1,7 @@
+{
+  "url": string,
+  "interval": number,
+  "latlngs": [
+    [number, number],
+  ]
+}
